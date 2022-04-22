@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 
 	"github.com/anaskhan96/soup"
 	"github.com/gorilla/mux"
@@ -36,15 +35,9 @@ func requestHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	doc := soup.HTMLParse(string(body))
-	scripts := doc.FindAll("script", "id", "sigi-persisted-data")
-
-	for _, script := range scripts {
-		text := strings.TrimPrefix(script.Text(), "window['SIGI_STATE']=")
-
-		idx := strings.Index(text, ";window['SIGI_RETRY']")
-		text = text[:idx]
-
-		w.Write([]byte(text))
+	scripts := doc.FindAll("script", "id", "SIGI_STATE")
+	if len(scripts) > 0 {
+		w.Write([]byte(scripts[0].Text()))
 	}
 }
 
