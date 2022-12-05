@@ -37,6 +37,10 @@ func requestHandler(w http.ResponseWriter, r *http.Request) {
 	doc := soup.HTMLParse(string(body))
 	scripts := doc.FindAll("script", "id", "SIGI_STATE")
 	if len(scripts) > 0 {
+		for _, cookie := range resp.Cookies() {
+			http.SetCookie(w, cookie)
+		}
+
 		w.Write([]byte(scripts[0].Text()))
 	}
 }
